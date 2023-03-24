@@ -8,8 +8,8 @@ const main = async () => {
   const trpcClient = createTRPCProxyClient<AppRouter>({
     links: [httpBatchLink({ url: 'http:localhost:3000/trpc', fetch })]
   });
-  const hello = await trpcClient.greeting.hello.query();
-  console.log({ hello });
+  const helloGreeting = await trpcClient.greeting.hello.query();
+  console.log({ helloGreeting });
 };
 
 main();
