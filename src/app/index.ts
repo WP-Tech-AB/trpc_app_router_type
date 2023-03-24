@@ -1,14 +1,22 @@
 import * as trpcExpress from '@trpc/server/adapters/express';
 import express from 'express';
-import { createGreetingRouter, GreetingRouter } from '../services/greeting';
+import {
+  createGreetingRouter,
+  createGreetingService,
+  GreetingRouter
+} from '../services';
 import { createTrpc, TrpcRouter } from '../trpc';
 export type AppRouter = TrpcRouter<{ greeting: GreetingRouter }>;
 
 export const app = async () => {
+  const greetingService = createGreetingService();
+
   const trpc = createTrpc();
+
   const appRouter: AppRouter = trpc.router({
-    greeting: createGreetingRouter(trpc)
+    greeting: createGreetingRouter(greetingService, trpc)
   });
+
   const app = express();
   app.use(express.json());
   app.get('/', (req, res) => {
