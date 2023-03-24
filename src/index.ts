@@ -1,1 +1,5 @@
-console.log('Hello from trpc_app_router_type');
+import { publicProcedure, router } from './trpc';
+const appRouter = router({
+  greeting: publicProcedure.query(() => 'hello tRPC v10!')
+});
+export type AppRouter = typeof appRouter;
