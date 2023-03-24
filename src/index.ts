@@ -1,9 +1,9 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import fetch from 'cross-fetch';
-import { AppRouter, main } from './app';
+import { app, AppRouter } from './app';
 
-const run = async () => {
-  await main();
+const main = async () => {
+  await app();
 
   const trpcClient = createTRPCProxyClient<AppRouter>({
     links: [httpBatchLink({ url: 'http:localhost:3000/trpc', fetch })]
@@ -12,4 +12,4 @@ const run = async () => {
   console.log({ hello });
 };
 
-run();
+main();
