@@ -1,14 +1,14 @@
-import { GreetingService } from '.';
-import { Trpc } from '../../trpc';
+import { GreetingServiceApi } from ".";
+import { Trpc } from "../../trpc";
 export type GreetingRouter = ReturnType<typeof createGreetingRouter>;
 
 export const createGreetingRouter = (
-  greetingService: GreetingService,
+  greetingServiceApi: GreetingServiceApi,
   trpc: Trpc
 ) => {
   return trpc.router({
     hello: trpc.procedure.query(async () => {
-      return greetingService.hello();
-    })
+      return greetingServiceApi.hello();
+    }),
   });
 };
