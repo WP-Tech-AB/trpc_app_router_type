@@ -12,17 +12,17 @@ type Services = { greeting: GreetingService };
 function createAppRouter(services: Services) {
   const trpc = createTrpc();
 
+  type AppRouter = {
+    [k in keyof Services]: ReturnType<Services[k]["createRouter"]>;
+  };
+
   const serviceEntries = Object.entries(services);
 
   const routerEntries = serviceEntries.map(([serviceName, service]) => {
-    return [serviceName, service.createRouter(trpc)] as const;
+    return [serviceName, service.createRouter(trpc)];
   });
 
-  const appRouter2 = Object.fromEntries(routerEntries);
-
-  const appRouter = {
-    greeting: services.greeting.createRouter(trpc),
-  };
+  const appRouter = Object.fromEntries(routerEntries) as AppRouter;
 
   return createTrpc().router(appRouter);
 }
