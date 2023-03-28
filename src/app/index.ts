@@ -1,10 +1,6 @@
 import * as trpcExpress from "@trpc/server/adapters/express";
 import express from "express";
-import {
-  createGreetingRouter,
-  createGreetingService,
-  GreetingService,
-} from "../services";
+import { createGreetingService, GreetingService } from "../services";
 import { createTrpc } from "../trpc";
 
 type Services = { greeting: GreetingService };
