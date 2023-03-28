@@ -1,14 +1,27 @@
-import * as trpcExpress from '@trpc/server/adapters/express';
-import express from 'express';
-import { createGreetingRouter, createGreetingService } from '../services';
-import { createTrpc } from '../trpc';
+import * as trpcExpress from "@trpc/server/adapters/express";
+import express from "express";
+import {
+  createGreetingRouter,
+  createGreetingService,
+  GreetingService,
+} from "../services";
+import { createTrpc } from "../trpc";
 
-function createAppRouter() {
+type Services = { greeting: GreetingService };
+
+function createAppRouter(services: Services) {
   const trpc = createTrpc();
 
-  const greetingService = createGreetingService();
+  const serviceEntries = Object.entries(services);
+
+  const routerEntries = serviceEntries.map(([serviceName, service]) => {
+    return [serviceName, service.createRouter(trpc)] as const;
+  });
+
+  const appRouter2 = Object.fromEntries(routerEntries);
+
   const appRouter = {
-    greeting: createGreetingRouter(greetingService, trpc)
+    greeting: services.greeting.createRouter(trpc),
   };
 
   return createTrpc().router(appRouter);
@@ -17,14 +30,18 @@ function createAppRouter() {
 export type AppRouter = ReturnType<typeof createAppRouter>;
 
 export const app = async () => {
-  const appRouter = createAppRouter();
+  const services = {
+    greeting: createGreetingService(),
+  };
+
+  const appRouter = createAppRouter(services);
 
   const app = express();
   app.use(express.json());
-  app.get('/', (req, res) => {
+  app.get("/", (req, res) => {
     res.sendStatus(200);
   });
-  app.use('/trpc', trpcExpress.createExpressMiddleware({ router: appRouter }));
+  app.use("/trpc", trpcExpress.createExpressMiddleware({ router: appRouter }));
   const port = 3000;
   return new Promise<void>((resolve, reject) => {
     app.listen(port, () => {
